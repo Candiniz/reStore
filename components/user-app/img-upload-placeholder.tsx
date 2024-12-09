@@ -27,6 +27,8 @@ interface FilePreview {
 
 export default function ImageUploadPlaceHolder() {
 
+    const [isMounted, setIsMounted] = useState(false)
+
     const [file, setFile] = useState<FilePreview | null>()
     const [fileToProcess, setFileToProcess] = useState<{ path: string } | null>(null)
     const [restoredFile, setRestoredFile] = useState<FilePreview | null>()
@@ -41,9 +43,9 @@ export default function ImageUploadPlaceHolder() {
             const supabase = createClientComponentClient()
             const { data, error } = await supabase.storage.from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER).upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_PROCESSING}/${acceptFiles[0].name}`, acceptFiles[0]
             )
-                if(!error){
-                    setFileToProcess(data)
-                }
+            if (!error) {
+                setFileToProcess(data)
+            }
 
         } catch (error) {
             console.log("onDrop", error)
@@ -54,6 +56,7 @@ export default function ImageUploadPlaceHolder() {
 
 
     useEffect(() => {
+        setIsMounted(true)
         return () => {
             if (file) URL.revokeObjectURL(file.preview)
             if (restoredFile) URL.revokeObjectURL(restoredFile.preview)
@@ -75,8 +78,10 @@ export default function ImageUploadPlaceHolder() {
 
     const handleEnhance = async () => {
         try {
-            const supabase = createClientComponentClient()
-            const { data: {publicUrl} } = await supabase.storage.from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER).getPublicUrl(`${fileToProcess?.path}`)
+            const supabase = createClientComponentClient();
+            const { data: { publicUrl } } = await supabase.storage
+                .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
+                .getPublicUrl(`${fileToProcess?.path}`);
 
             const res = await fetch("/api/ai/replicate", {
                 method: "POST",
@@ -85,13 +90,40 @@ export default function ImageUploadPlaceHolder() {
                 },
                 body: JSON.stringify({
                     imageUrl: publicUrl,
-                })
-            })
-            console.log("publicUrl:", publicUrl)
-        } catch(error) {
-            console.log("handleEnhance: ", error)
+                }),
+            });
+
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || "Erro desconhecido ao aprimorar a imagem");
+            }
+
+            const restoredImageUrl = await res.json();
+            const readImageRes = await fetch(restoredImageUrl.data);
+
+            if (!readImageRes.ok) {
+                throw new Error("Erro ao baixar a imagem aprimorada.");
+            }
+
+            const imageBlob = await readImageRes.blob();
+            setRestoredFile({
+                file: imageBlob,
+                preview: URL.createObjectURL(imageBlob),
+            });
+
+        } catch (error: unknown) {
+            if (error instanceof Error) {
+                console.error("handleEnhance:", error.message);
+                alert(error.message);
+            } else {
+                console.error("handleEnhance: erro inesperado", error);
+                alert("Ocorreu um erro inesperado.");
+            }
         }
-    }
+    };
+
+
+    if (!isMounted) return null
 
     return (
         <div className="flex h-[200px] w-full shrink-0 items-center justify-center rounded-md border border-dashed">
