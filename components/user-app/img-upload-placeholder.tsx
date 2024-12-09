@@ -2,6 +2,7 @@
 /* eslint-disable @next/next/no-img-element */
 'use client'
 
+import { POST } from "@/app/api/ai/replicate/route"
 import { Button } from "@/components/ui/button"
 import {
     Dialog,
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
 import { isWeakMap } from "util/types"
@@ -25,9 +27,9 @@ interface FilePreview {
 
 export default function ImageUploadPlaceHolder() {
 
-    const [file, setFile] = useState <FilePreview|null> ()
-    const [fileToProcess, setFileToProcess] = useState <{path: string} | null>(null)
-    const [restoredFile, setRestoredFile] = useState <FilePreview|null> ()
+    const [file, setFile] = useState<FilePreview | null>()
+    const [fileToProcess, setFileToProcess] = useState<{ path: string } | null>(null)
+    const [restoredFile, setRestoredFile] = useState<FilePreview | null>()
 
     const onDrop = useCallback(async (acceptFiles: File[]) => {
         try {
@@ -35,15 +37,26 @@ export default function ImageUploadPlaceHolder() {
             setFile({
                 file, preview: URL.createObjectURL(file)
             })
-        } catch(error) {
+
+            const supabase = createClientComponentClient()
+            const { data, error } = await supabase.storage.from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER).upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_PROCESSING}/${acceptFiles[0].name}`, acceptFiles[0]
+            )
+                if(!error){
+                    setFileToProcess(data)
+                }
+
+        } catch (error) {
             console.log("onDrop", error)
         }
     }, [])
 
-    useEffect (() => {
+
+
+
+    useEffect(() => {
         return () => {
-            if(file) URL.revokeObjectURL(file.preview)
-            if(restoredFile) URL.revokeObjectURL(restoredFile.preview)
+            if (file) URL.revokeObjectURL(file.preview)
+            if (restoredFile) URL.revokeObjectURL(restoredFile.preview)
         }
     }, [file])
 
@@ -51,13 +64,33 @@ export default function ImageUploadPlaceHolder() {
         onDrop,
         maxFiles: 1,
         accept: {
-            "image/png" : [".png"],
+            "image/png": [".png"],
             "image/jpeg": [".jpg"],
         },
     })
 
-    const handleDialogOpenChange = async (e:boolean) => {
-        
+    const handleDialogOpenChange = async (e: boolean) => {
+        console.log(e)
+    }
+
+    const handleEnhance = async () => {
+        try {
+            const supabase = createClientComponentClient()
+            const { data: {publicUrl} } = await supabase.storage.from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER).getPublicUrl(`${fileToProcess?.path}`)
+
+            const res = await fetch("/api/ai/replicate", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    imageUrl: publicUrl,
+                })
+            })
+            console.log("publicUrl:", publicUrl)
+        } catch(error) {
+            console.log("handleEnhance: ", error)
+        }
     }
 
     return (
@@ -92,7 +125,7 @@ export default function ImageUploadPlaceHolder() {
                         <DialogHeader>
                             <DialogTitle>Adicionar foto</DialogTitle>
                             <DialogDescription>
-                               Arraste sua foto para fazer o Upload & Aprimoramento
+                                Arraste sua foto para fazer o Upload & Aprimoramento
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
@@ -116,7 +149,7 @@ export default function ImageUploadPlaceHolder() {
                                         file && (
                                             <div className="flex flex-row flex-wrap drop-shadow-md">
                                                 <div className="flex w-48 h-48 relative">
-                                                    <img 
+                                                    <img
                                                         src={file.preview}
                                                         className="w-48 h-48 object-contain rounded-md"
                                                         onLoad={() => URL.revokeObjectURL(file.preview)}
@@ -129,7 +162,7 @@ export default function ImageUploadPlaceHolder() {
                                         restoredFile && (
                                             <div className="flex flex-row flex-wrap drop-shadow-md">
                                                 <div className="flex w-60 h-60 relative">
-                                                    <img 
+                                                    <img
                                                         src={restoredFile.preview}
                                                         className="w-60 h-60 object-contain rounded-md"
                                                         onLoad={() => URL.revokeObjectURL(restoredFile.preview)}
@@ -142,7 +175,7 @@ export default function ImageUploadPlaceHolder() {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button>Aprimorar</Button>
+                            <Button onClick={handleEnhance}>Aprimorar</Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
