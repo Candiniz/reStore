@@ -31,7 +31,7 @@ export default function UserProjects() {
     return <div>Carregando...</div>;
   }
 
-  // console.log(projectsInfo.totalProjects)
+  console.log(projectsInfo.totalProjects)
   return (
     <div>
       <h3>Projetos Restaurados</h3>

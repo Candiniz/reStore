@@ -19,7 +19,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
-import { isWeakMap } from "util/types"
+
 
 interface FilePreview {
     file: Blob
@@ -106,6 +106,9 @@ export default function DocumentUploadPlaceHolder() {
                     console.log("Arquivo removido com sucesso.")
                 }
             }
+             // Limpar os estados
+            setFileToProcess(null)
+            router.refresh()
         }
     }
 
@@ -115,6 +118,7 @@ export default function DocumentUploadPlaceHolder() {
 
             const { data: { user } } = await supabase.auth.getUser();
             const userId = user?.id;
+            // console.log('userId:', userId)
 
             const { data: { publicUrl } } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
@@ -151,6 +155,7 @@ export default function DocumentUploadPlaceHolder() {
             const { data, error } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
                 .upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED}/${userId}/${file?.file.name}`, imageBlob)
+                
 
             if (error) {
                 setRestoredFile(null)

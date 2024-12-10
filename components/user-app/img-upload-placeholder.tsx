@@ -49,15 +49,19 @@ export default function ImageUploadPlaceHolder() {
             const { data: { user } } = await supabase.auth.getUser();
             const userId = user?.id;
             
-            const { data, error: uploadError } = await supabase.storage
+            const { data, error } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
                 .upload(
                     `${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_PROCESSING}/${userId}/${acceptFiles[0].name}`, acceptFiles[0]
                 )
-                if (uploadError) {
-                    console.error("Erro no upload do arquivo:", uploadError.message);
+                if (!error) {
+                    setFileToProcess(data)
+                }
+    
+                if (error) {
+                    console.error("Erro ao fazer upload de documento:", error);
                 } else {
-                    setFileToProcess(data);
+                    console.log("Upload de documento concluído com sucesso:", data);
                 }
     
             
@@ -95,6 +99,8 @@ export default function ImageUploadPlaceHolder() {
                 setFile(null)
                 setRestoredFile(null)
                 router.refresh()
+
+                console.log("Tentando remover o arquivo:", fileToProcess.path);
 
                 if (error) {
                     console.error("Erro ao remover o arquivo do Supabase:", error.message)
@@ -136,7 +142,7 @@ export default function ImageUploadPlaceHolder() {
             }
 
             const restoredImageUrl = await res.json();
-            console.log(restoredImageUrl)
+            // console.log(restoredImageUrl)
             const readImageRes = await fetch(restoredImageUrl.data);
 
             if (!readImageRes.ok) {
