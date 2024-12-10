@@ -19,7 +19,6 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
-import { isWeakMap } from "util/types"
 
 interface FilePreview {
     file: Blob
@@ -43,8 +42,11 @@ export default function ImageUploadPlaceHolder() {
             })
 
             const supabase = createClientComponentClient()
-            const { data, error } = await supabase.storage.from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER).upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_PROCESSING}/${acceptFiles[0].name}`, acceptFiles[0]
-            )
+            const { data, error } = await supabase.storage
+                .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
+                .upload(
+                    `${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_PROCESSING}/${acceptFiles[0].name}`, acceptFiles[0]
+                )
             if (!error) {
                 setFileToProcess(data)
             }
@@ -53,9 +55,6 @@ export default function ImageUploadPlaceHolder() {
             console.log("onDrop", error)
         }
     }, [])
-
-
-
 
     useEffect(() => {
         setIsMounted(true)
@@ -75,9 +74,28 @@ export default function ImageUploadPlaceHolder() {
     })
 
     const handleDialogOpenChange = async (e: boolean) => {
-        if(!e) {
+        if (!e) {
+            // Verificar se existe um arquivo em processamento
+            if (fileToProcess) {
+                const supabase = createClientComponentClient()
+                const { error } = await supabase.storage
+                    .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
+                    .remove([fileToProcess.path])
+                setFile(null)
+                setRestoredFile(null)
+                router.refresh()
+
+                if (error) {
+                    console.error("Erro ao remover o arquivo do Supabase:", error.message)
+                } else {
+                    console.log("Arquivo removido com sucesso.")
+                }
+            }
+
+            // Limpar os estados
             setFile(null)
             setRestoredFile(null)
+            setFileToProcess(null)
             router.refresh()
         }
     }
@@ -98,7 +116,6 @@ export default function ImageUploadPlaceHolder() {
                     imageUrl: publicUrl,
                 }),
             });
-            console.log(publicUrl)
 
             if (!res.ok) {
                 const errorData = await res.json();
@@ -118,9 +135,11 @@ export default function ImageUploadPlaceHolder() {
                 preview: URL.createObjectURL(imageBlob),
             });
 
-            const { data, error } = await supabase.storage.from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER).upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED}/${file?.file.name}`, imageBlob)
+            const { data, error } = await supabase.storage
+                .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
+                .upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED}/${file?.file.name}`, imageBlob)
 
-            if(error) {
+            if (error) {
                 setRestoredFile(null)
             }
 
@@ -136,7 +155,6 @@ export default function ImageUploadPlaceHolder() {
             }
         }
     };
-
 
     if (!isMounted) return null
 

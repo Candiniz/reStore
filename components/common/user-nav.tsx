@@ -54,7 +54,7 @@ export function UserNav() {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                            <Avatar className="h-8 w-8">
+                            <Avatar className="h-8 w-8 rounded-full border-[1px] border-white">
                                 <AvatarImage src="/avatars/male1.png" alt="Foto de Perfil" />
                                 <AvatarFallback>RS</AvatarFallback>
                             </Avatar>

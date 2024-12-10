@@ -35,24 +35,27 @@ export default function MiscUploadPlaceHolder() {
     const [fileToProcess, setFileToProcess] = useState<{ path: string } | null>(null)
     const [restoredFile, setRestoredFile] = useState<FilePreview | null>()
 
-    const onDrop = useCallback(async (acceptFiles: File[]) => {
+    const onDrop = useCallback(async (acceptedFiles: File[]) => {
         try {
-            const file = acceptFiles[0]
-            setFile({
-                file, preview: URL.createObjectURL(file)
-            })
+            const file = acceptedFiles[0];
 
-            const supabase = createClientComponentClient()
-            const { data, error } = await supabase.storage.from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER).upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_PROCESSING}/${acceptFiles[0].name}`, acceptFiles[0]
-            )
-            if (!error) {
-                setFileToProcess(data)
+            const supabase = createClientComponentClient();
+            const { data, error } = await supabase.storage
+                .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_MISC_FOLDER)
+                .upload(
+                    `${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_MISC_FOLDER_PROCESSING}/${file.name}`,
+                    file
+                );
+
+            if (error) {
+                console.error("Erro ao fazer upload de arquivos variados:", error);
+            } else {
+                console.log("Upload de arquivos variados concluído com sucesso:", data);
             }
-
         } catch (error) {
-            console.log("onDrop", error)
+            console.error("Erro no onDrop para arquivos variados:", error);
         }
-    }, [])
+    }, []);
 
 
 
@@ -75,7 +78,7 @@ export default function MiscUploadPlaceHolder() {
     })
 
     const handleDialogOpenChange = async (e: boolean) => {
-        if(!e) {
+        if (!e) {
             setFile(null)
             setRestoredFile(null)
             router.refresh()
@@ -120,7 +123,7 @@ export default function MiscUploadPlaceHolder() {
 
             const { data, error } = await supabase.storage.from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER).upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED}/${file?.file.name}`, imageBlob)
 
-            if(error) {
+            if (error) {
                 setRestoredFile(null)
             }
 

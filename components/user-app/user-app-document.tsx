@@ -24,7 +24,7 @@ interface AlbumArtworkProps extends React.HTMLAttributes<HTMLDivElement> {
     aspectRatio?: "portrait" | "square"
     width?: number
     height?: number
-    publicUrl: { publicUrl: string };
+    publicDocUrl: { publicUrl: string };
 }
 
 export default function UserAppDocument({
@@ -32,7 +32,7 @@ export default function UserAppDocument({
     aspectRatio = "portrait",
     width,
     height,
-    publicUrl,
+    publicDocUrl,
     className,
     ...props
 }: AlbumArtworkProps) {
@@ -40,8 +40,9 @@ export default function UserAppDocument({
 
     const downloadImage = async (image: string) => {
         const supabase = createClientComponentClient()
-        const { data } = await supabase.storage.from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
-            .download(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED}/${image}`)
+        const { data } = await supabase.storage
+            .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
+            .download(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED}/${image}`)
 
         if (data) {
             let a = document.createElement("a")
@@ -60,7 +61,7 @@ export default function UserAppDocument({
                 <ContextMenuTrigger>
                     <div className="overflow-hidden rounded-md">
                         <Image
-                            src={`${publicUrl.publicUrl}/${encodeURIComponent(image.name)}`}
+                            src={`${publicDocUrl.publicUrl}/${encodeURIComponent(image.name)}`}
                             alt={image.name}
                             width={width}
                             height={height}

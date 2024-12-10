@@ -37,22 +37,31 @@ export default function DocumentUploadPlaceHolder() {
 
     const onDrop = useCallback(async (acceptFiles: File[]) => {
         try {
-            const file = acceptFiles[0]
+            const file = acceptFiles[0];
             setFile({
                 file, preview: URL.createObjectURL(file)
-            })
+            });
 
-            const supabase = createClientComponentClient()
-            const { data, error } = await supabase.storage.from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER).upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_PROCESSING}/${acceptFiles[0].name}`, acceptFiles[0]
-            )
+            const supabase = createClientComponentClient();
+            const { data, error } = await supabase.storage
+                .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
+                .upload(
+                    `${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_PROCESSING}/${acceptFiles[0].name}`, acceptFiles[0]
+                )
+
             if (!error) {
                 setFileToProcess(data)
             }
 
+            if (error) {
+                console.error("Erro ao fazer upload de documento:", error);
+            } else {
+                console.log("Upload de documento concluído com sucesso:", data);
+            }
         } catch (error) {
-            console.log("onDrop", error)
+            console.error("Erro no onDrop para documentos:", error);
         }
-    }, [])
+    }, []);
 
 
 
@@ -75,10 +84,24 @@ export default function DocumentUploadPlaceHolder() {
     })
 
     const handleDialogOpenChange = async (e: boolean) => {
-        if(!e) {
-            setFile(null)
-            setRestoredFile(null)
-            router.refresh()
+        if (!e) {
+            if (fileToProcess) {
+                const supabase = createClientComponentClient()
+                const { error } = await supabase.storage
+                    .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
+                    .remove([fileToProcess.path])
+                setFile(null)
+                setRestoredFile(null)
+                router.refresh()
+
+                console.log("Tentando remover o arquivo:", fileToProcess.path);
+
+                if (error) {
+                    console.error("Erro ao remover o arquivo do Supabase:", error.message)
+                } else {
+                    console.log("Arquivo removido com sucesso.")
+                }
+            }
         }
     }
 
@@ -86,19 +109,18 @@ export default function DocumentUploadPlaceHolder() {
         try {
             const supabase = createClientComponentClient();
             const { data: { publicUrl } } = await supabase.storage
-                .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
+                .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
                 .getPublicUrl(`${fileToProcess?.path}`);
 
-            const res = await fetch("/api/ai/replicate", {
+            const res = await fetch("/api/ai/replicatedocs", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    imageUrl: publicUrl,
+                    documentUrl: publicUrl,
                 }),
             });
-            console.log(publicUrl)
 
             if (!res.ok) {
                 const errorData = await res.json();
@@ -118,9 +140,11 @@ export default function DocumentUploadPlaceHolder() {
                 preview: URL.createObjectURL(imageBlob),
             });
 
-            const { data, error } = await supabase.storage.from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER).upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED}/${file?.file.name}`, imageBlob)
+            const { data, error } = await supabase.storage
+                .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
+                .upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED}/${file?.file.name}`, imageBlob)
 
-            if(error) {
+            if (error) {
                 setRestoredFile(null)
             }
 

@@ -24,7 +24,7 @@ interface AlbumArtworkProps extends React.HTMLAttributes<HTMLDivElement> {
     aspectRatio?: "portrait" | "square"
     width?: number
     height?: number
-    publicUrl: { publicUrl: string };
+    publicImgUrl: { publicUrl: string };
 }
 
 export default function UserAppImage({
@@ -32,7 +32,7 @@ export default function UserAppImage({
     aspectRatio = "portrait",
     width,
     height,
-    publicUrl,
+    publicImgUrl,
     className,
     ...props
 }: AlbumArtworkProps) {
@@ -60,7 +60,7 @@ export default function UserAppImage({
                 <ContextMenuTrigger>
                     <div className="overflow-hidden rounded-md">
                         <Image
-                            src={`${publicUrl.publicUrl}/${encodeURIComponent(image.name)}`}
+                            src={`${publicImgUrl.publicUrl}/${encodeURIComponent(image.name)}`}
                             alt={image.name}
                             width={width}
                             height={height}

@@ -45,16 +45,40 @@ export default async function UserApp() {
       sortBy: { column: "name", order: "asc" }
     })
 
-  const { data: publicUrl } = await supabase.storage
+  const { data: restoredDocuments } = await supabase.storage
+    .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
+    .list(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED, {
+      limit: 10,
+      offset: 0,
+      sortBy: { column: "name", order: "asc" },
+    });
+
+  // const { data: restoredOthers } = await supabase.storage
+  // .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_MISC_FOLDER)
+  // .list(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_MISC_FOLDER_RESTORED, {
+  //     limit: 10,
+  //     offset: 0,
+  //     sortBy: { column: "name", order: "asc" },
+  // });
+
+
+
+  const { data: publicImgUrl } = await supabase.storage
     .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
     .getPublicUrl(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED)
 
-  console.log(publicUrl.publicUrl);
+  const { data: publicDocUrl } = await supabase.storage
+    .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
+    .getPublicUrl(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED)
+
+    // console.log('Doc:', publicDocUrl)
+    // console.log('Img:', publicImgUrl)
+
   return (
     <>
       <div className="">
         <UserAppHeader />
-        <div className="">
+        <div className="text-[#052539] mt-[50px]">
           <div className="">
             <div className="grid lg:grid-cols-5">
               <Sidebar className='hidden lg:block' />
@@ -107,7 +131,7 @@ export default async function UserApp() {
                                 aspectRatio="square"
                                 width={250}
                                 height={330}
-                                publicUrl={publicUrl}
+                                publicImgUrl={publicImgUrl}
                               />
                             ))}
                           </div>
@@ -140,15 +164,15 @@ export default async function UserApp() {
                           <div
                             className="flex items-center justify-center flex-wrap gap-2
                           ">
-                            {restoredImages?.map((restoredImage) => (
+                            {restoredDocuments?.map((restoredDocument) => (
                               <UserAppDocument
-                                key={restoredImage.name}
-                                image={restoredImage}
+                                key={restoredDocument.name}
+                                image={restoredDocument}
                                 className="w-[250px]"
                                 aspectRatio="square"
                                 width={250}
                                 height={330}
-                                publicUrl={publicUrl}
+                                publicDocUrl={publicDocUrl}
                               />
                             ))}
                           </div>
@@ -169,15 +193,15 @@ export default async function UserApp() {
                       </div>
                       <Separator className="my-4" />
                       <div className='relative'>
-                      <MiscUploadPlaceHolder />
+                        {/* <MiscUploadPlaceHolder />
                         <ScrollArea>
                           <div
                             className="flex items-center justify-center flex-wrap gap-2
                           ">
-                            {restoredImages?.map((restoredImage) => (
+                            {restoredOthers?.map((restoredOther) => (
                               <UserAppOther
-                                key={restoredImage.name}
-                                image={restoredImage}
+                                key={restoredOther.name}
+                                image={restoredOther}
                                 className="w-[250px]"
                                 aspectRatio="square"
                                 width={250}
@@ -187,7 +211,7 @@ export default async function UserApp() {
                             ))}
                           </div>
                           <ScrollBar orientation="horizontal" />
-                        </ScrollArea>
+                        </ScrollArea> */}
                       </div>
                     </TabsContent>
                   </Tabs>
