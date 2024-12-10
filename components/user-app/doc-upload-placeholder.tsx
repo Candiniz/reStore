@@ -43,10 +43,14 @@ export default function DocumentUploadPlaceHolder() {
             });
 
             const supabase = createClientComponentClient();
+
+            const { data: { user } } = await supabase.auth.getUser();
+            const userId = user?.id;
+
             const { data, error } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
                 .upload(
-                    `${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_PROCESSING}/${acceptFiles[0].name}`, acceptFiles[0]
+                    `${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_PROCESSING}/${userId}/${acceptFiles[0].name}`, acceptFiles[0]
                 )
 
             if (!error) {
@@ -108,6 +112,10 @@ export default function DocumentUploadPlaceHolder() {
     const handleEnhance = async () => {
         try {
             const supabase = createClientComponentClient();
+
+            const { data: { user } } = await supabase.auth.getUser();
+            const userId = user?.id;
+
             const { data: { publicUrl } } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
                 .getPublicUrl(`${fileToProcess?.path}`);
@@ -142,7 +150,7 @@ export default function DocumentUploadPlaceHolder() {
 
             const { data, error } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
-                .upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED}/${file?.file.name}`, imageBlob)
+                .upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED}/${userId}/${file?.file.name}`, imageBlob)
 
             if (error) {
                 setRestoredFile(null)

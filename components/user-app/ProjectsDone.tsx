@@ -30,6 +30,7 @@ export default function UserProjects() {
   if (!projectsInfo) {
     return <div>Carregando...</div>;
   }
+
   console.log(projectsInfo.totalProjects)
   return (
     <div>

@@ -40,8 +40,12 @@ export default function UserAppImage({
 
     const downloadImage = async (image: string) => {
         const supabase = createClientComponentClient()
+
+        const { data: { user } } = await supabase.auth.getUser();
+        const userId = user?.id;
+        
         const { data } = await supabase.storage.from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
-            .download(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED}/${image}`)
+            .download(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED}/${userId}/${image}`)
 
         if (data) {
             let a = document.createElement("a")

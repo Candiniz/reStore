@@ -22,6 +22,9 @@ export default async function UserApp() {
   let loggedIn = false
   const supabase = createServerComponentClient({ cookies })
 
+  const { data: { user } } = await supabase.auth.getUser();
+  const userId = user?.id;
+
   try {
     const { data: { session } } = await supabase.auth.getSession()
 
@@ -36,9 +39,13 @@ export default async function UserApp() {
     if (!loggedIn) redirect("/", RedirectType.replace)
   }
 
+  const restoredImagesPath = `${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED}/${userId}`;
+
+  const restoredDocsPath = `${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED}/${userId}`;
+
   const { data: restoredImages } = await supabase.storage
     .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
-    .list(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED, {
+    .list(restoredImagesPath, {
       limit: 10,
       offset: 0,
       sortBy: { column: "name", order: "asc" }
@@ -46,7 +53,7 @@ export default async function UserApp() {
 
   const { data: restoredDocuments } = await supabase.storage
     .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
-    .list(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED, {
+    .list(restoredDocsPath, {
       limit: 10,
       offset: 0,
       sortBy: { column: "name", order: "asc" },
@@ -64,14 +71,14 @@ export default async function UserApp() {
 
   const { data: publicImgUrl } = await supabase.storage
     .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
-    .getPublicUrl(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED)
+    .getPublicUrl(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED}/${userId}`)
 
   const { data: publicDocUrl } = await supabase.storage
     .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
-    .getPublicUrl(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED)
+    .getPublicUrl(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED}/${userId}`)
 
-    // console.log('Doc:', publicDocUrl)
-    // console.log('Img:', publicImgUrl)
+  console.log('Doc:', publicDocUrl)
+  console.log('Img:', publicImgUrl)
 
   return (
     <>

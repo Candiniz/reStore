@@ -34,6 +34,9 @@ export default function ImageUploadPlaceHolder() {
     const [fileToProcess, setFileToProcess] = useState<{ path: string } | null>(null)
     const [restoredFile, setRestoredFile] = useState<FilePreview | null>()
 
+
+
+    
     const onDrop = useCallback(async (acceptFiles: File[]) => {
         try {
             const file = acceptFiles[0]
@@ -42,14 +45,22 @@ export default function ImageUploadPlaceHolder() {
             })
 
             const supabase = createClientComponentClient()
-            const { data, error } = await supabase.storage
+
+            const { data: { user } } = await supabase.auth.getUser();
+            const userId = user?.id;
+            
+            const { data, error: uploadError } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
                 .upload(
-                    `${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_PROCESSING}/${acceptFiles[0].name}`, acceptFiles[0]
+                    `${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_PROCESSING}/${userId}/${acceptFiles[0].name}`, acceptFiles[0]
                 )
-            if (!error) {
-                setFileToProcess(data)
-            }
+                if (uploadError) {
+                    console.error("Erro no upload do arquivo:", uploadError.message);
+                } else {
+                    setFileToProcess(data);
+                }
+    
+            
 
         } catch (error) {
             console.log("onDrop", error)
@@ -93,8 +104,6 @@ export default function ImageUploadPlaceHolder() {
             }
 
             // Limpar os estados
-            setFile(null)
-            setRestoredFile(null)
             setFileToProcess(null)
             router.refresh()
         }
@@ -103,6 +112,10 @@ export default function ImageUploadPlaceHolder() {
     const handleEnhance = async () => {
         try {
             const supabase = createClientComponentClient();
+
+            const { data: { user } } = await supabase.auth.getUser();
+            const userId = user?.id;
+
             const { data: { publicUrl } } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
                 .getPublicUrl(`${fileToProcess?.path}`);
@@ -123,6 +136,7 @@ export default function ImageUploadPlaceHolder() {
             }
 
             const restoredImageUrl = await res.json();
+            console.log(restoredImageUrl)
             const readImageRes = await fetch(restoredImageUrl.data);
 
             if (!readImageRes.ok) {
@@ -137,7 +151,7 @@ export default function ImageUploadPlaceHolder() {
 
             const { data, error } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
-                .upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED}/${file?.file.name}`, imageBlob)
+                .upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER_RESTORED}/${userId}/${file?.file.name}`, imageBlob)
 
             if (error) {
                 setRestoredFile(null)
