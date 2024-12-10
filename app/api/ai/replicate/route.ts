@@ -6,7 +6,7 @@ interface NextRequestWithImage extends NextRequest {
     imageUrl: string
 }
 
-export async function POST(req: NextRequestWithImage, res: NextResponse) {
+export async function POST(req: NextRequestWithImage) {
     const { imageUrl } = await req.json()
 
     const supabase = createRouteHandlerClient({ cookies })

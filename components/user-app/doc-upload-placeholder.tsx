@@ -26,7 +26,7 @@ interface FilePreview {
     preview: string
 }
 
-export default function ImageUploadPlaceHolder() {
+export default function DocumentUploadPlaceHolder() {
     const router = useRouter()
 
     const [isMounted, setIsMounted] = useState(false)
@@ -158,21 +158,21 @@ export default function ImageUploadPlaceHolder() {
                     <path d="M17 18.5a9 9 0 1 0-10 0" />
                 </svg>
 
-                <h3 className="mt-4 text-lg font-semibold">Adicione sua primeira foto!</h3>
+                <h3 className="mt-4 text-lg font-semibold">Adicione seu primeiro documento!</h3>
                 <p className="mb-4 mt-2 text-sm text-muted-foreground">
-                    Selecione as fotos que serão aprimoradas!
+                    Selecione os documentos que serão aprimoradas!
                 </p>
                 <Dialog onOpenChange={handleDialogOpenChange}>
                     <DialogTrigger asChild>
                         <Button size="sm" className="relative">
-                            Traga suas memórias a vida
+                            Recupere dados importantes!
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Adicionar foto</DialogTitle>
+                            <DialogTitle>Adicionar documento</DialogTitle>
                             <DialogDescription>
-                                Arraste sua foto para fazer o Upload & Aprimoramento
+                                Arraste seu documento para fazer o Upload & Aprimoramento
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
@@ -183,9 +183,9 @@ export default function ImageUploadPlaceHolder() {
                                             <input {...getInputProps()} />
                                             {
                                                 isDragActive ? (
-                                                    <p className="flex items-center justify-center bg-blue-100 opacity-70 text-opacity-50 border border-blue-300 border-dashed p-6 h-36 rounded-md">Arraste sua foto aqui</p>
+                                                    <p className="flex items-center justify-center bg-blue-100 opacity-70 text-opacity-50 border border-blue-300 border-dashed p-6 h-36 rounded-md">Arraste seu documento aqui</p>
                                                 ) : (
-                                                    <p className="flex items-center justify-center bg-blue-100 opacity-70 text-opacity-50 border border-blue-300 border-dashed p-6 h-36 rounded-md">Arraste ou clique para selecionar a imagem</p>
+                                                    <p className="flex items-center justify-center bg-blue-100 opacity-70 text-opacity-50 border border-blue-300 border-dashed p-6 h-36 rounded-md">Arraste ou clique para selecionar o documento</p>
                                                 )
                                             }
                                         </div>

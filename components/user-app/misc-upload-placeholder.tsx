@@ -26,7 +26,7 @@ interface FilePreview {
     preview: string
 }
 
-export default function ImageUploadPlaceHolder() {
+export default function MiscUploadPlaceHolder() {
     const router = useRouter()
 
     const [isMounted, setIsMounted] = useState(false)
