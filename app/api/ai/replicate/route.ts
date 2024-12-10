@@ -64,6 +64,7 @@ export async function POST(req: NextRequestWithImage) {
         }
     }
 
+    console.log("Imagem sendo restaurada:", imageUrl);
 
 
     return NextResponse.json({data: restoredImage ? restoredImage : "Falha na restauração da imagem."}, {

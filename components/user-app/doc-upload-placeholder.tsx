@@ -38,32 +38,51 @@ export default function DocumentUploadPlaceHolder() {
     const onDrop = useCallback(async (acceptFiles: File[]) => {
         try {
             const file = acceptFiles[0];
-            setFile({
-                file, preview: URL.createObjectURL(file)
-            });
 
+            // Verificar se o arquivo já foi carregado anteriormente
             const supabase = createClientComponentClient();
 
             const { data: { user } } = await supabase.auth.getUser();
             const userId = user?.id;
+            const filePath = `${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_PROCESSING}/${userId}/${file.name}`;
+
+            // Checando se o arquivo já existe no bucket de processamento
+            const { data: existingFiles, error: listError } = await supabase.storage
+                .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
+                .list(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_PROCESSING}/${userId}`);
+
+            if (listError) {
+                console.error("Erro ao listar arquivos:", listError.message);
+                alert("Erro ao verificar arquivos. Tente novamente.");
+                return;
+            }
+
+            // Se o arquivo já existir, bloqueia o upload e mostra o alerta
+            if (existingFiles.some(fileObj => fileObj.name === file.name)) {
+                alert("Você já importou uma foto com o mesmo nome. Tente verificar ou renomear a foto.");
+                return;  // Impede o upload do arquivo
+            }
+
+            // Se o arquivo não existe, permita o upload
+            setFile({
+                file,
+                preview: URL.createObjectURL(file),
+            });
 
             const { data, error } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
-                .upload(
-                    `${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_PROCESSING}/${userId}/${acceptFiles[0].name}`, acceptFiles[0]
-                )
-
-            if (!error) {
-                setFileToProcess(data)
-            }
+                .upload(filePath, file);
 
             if (error) {
-                console.error("Erro ao fazer upload de documento:", error);
+                console.error("Erro ao fazer upload de documento:", error.message);
+                alert("Erro desconhecido ao fazer upload. Tente novamente.");
             } else {
+                setFileToProcess(data);
                 console.log("Upload de documento concluído com sucesso:", data);
             }
         } catch (error) {
-            console.error("Erro no onDrop para documentos:", error);
+            console.log("onDrop", error);
+            alert("Erro ao fazer upload. Tente novamente.");
         }
     }, []);
 
@@ -89,26 +108,30 @@ export default function DocumentUploadPlaceHolder() {
 
     const handleDialogOpenChange = async (e: boolean) => {
         if (!e) {
+            // Verificar se existe um arquivo em processamento
             if (fileToProcess) {
                 const supabase = createClientComponentClient()
-                const { error } = await supabase.storage
-                    .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
-                    .remove([fileToProcess.path])
+
+                // Verifique se o arquivo foi restaurado com sucesso
+                if (!restoredFile) {
+                    // Só deleta o arquivo da pasta PROCESSING se o aprimoramento não foi bem-sucedido
+                    const { error } = await supabase.storage
+                        .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
+                        .remove([fileToProcess.path])
+
+                    if (error) {
+                        console.error("Erro ao remover o arquivo do Supabase:", error.message)
+                    } else {
+                        console.log("Arquivo removido com sucesso.")
+                    }
+                }
+
+                // Limpar os estados
                 setFile(null)
                 setRestoredFile(null)
+                setFileToProcess(null)
                 router.refresh()
-
-                console.log("Tentando remover o arquivo:", fileToProcess.path);
-
-                if (error) {
-                    console.error("Erro ao remover o arquivo do Supabase:", error.message)
-                } else {
-                    console.log("Arquivo removido com sucesso.")
-                }
             }
-             // Limpar os estados
-            setFileToProcess(null)
-            router.refresh()
         }
     }
 
@@ -155,7 +178,7 @@ export default function DocumentUploadPlaceHolder() {
             const { data, error } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
                 .upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED}/${userId}/${file?.file.name}`, imageBlob)
-                
+
 
             if (error) {
                 setRestoredFile(null)

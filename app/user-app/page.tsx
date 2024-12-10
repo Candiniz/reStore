@@ -91,7 +91,9 @@ export default async function UserApp() {
           <div className="text-[#052539] mt-[50px]">
             <div className="">
               <div className="grid lg:grid-cols-5">
-                <Sidebar className='hidden lg:block' />
+                <div>
+                  <Sidebar className='hidden lg:block' />
+                </div>
                 <div className="col-span-3 lg:col-span-4 lg:border-l">
                   <div className="h-full px-4 py-6 lg:px-8">
                     <Tabs defaultValue="fotos" className="h-full space-y-6">
