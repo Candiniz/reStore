@@ -14,8 +14,7 @@ import { cookies } from 'next/headers';
 import { redirect, RedirectType } from 'next/navigation';
 import DocumentUploadPlaceHolder from '@/components/user-app/doc-upload-placeholder';
 import UserAppDocument from '@/components/user-app/user-app-document';
-import MiscUploadPlaceHolder from '@/components/user-app/misc-upload-placeholder';
-import UserAppOther from '@/components/user-app/user-app-other';
+import ProjectsDone from '@/components/user-app/ProjectsDone'
 
 
 export default async function UserApp() {
@@ -95,7 +94,10 @@ export default async function UserApp() {
                           Outros
                         </TabsTrigger>
                       </TabsList>
-                      <div className="ml-auto mr-4">
+                      <div className="ml-auto mr-4 flex">
+                        <div>
+                          <ProjectsDone />
+                        </div>
                         <Button>
                           <PlusCircle />
                           Adicionar Conjunto
