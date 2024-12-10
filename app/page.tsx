@@ -1,7 +1,7 @@
 import { createServerComponentClient } from '@supabase/auth-helpers-nextjs'
 import { cookies } from 'next/headers';
 import { redirect, RedirectType } from 'next/navigation';
-
+import { createClient } from '@/utils/supabase/server'
 
 
 import {

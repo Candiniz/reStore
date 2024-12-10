@@ -41,7 +41,7 @@ export async function POST(req: NextRequestWithImage) {
     let restoredImage: string | null = null
 
     while(!restoredImage){
-        console.log("Pooling image from Replicate...")
+        console.log("Pooling document from Replicate...")
 
         const finalResponse = await fetch(endpointUrl, {
             method: "GET",
@@ -66,7 +66,7 @@ export async function POST(req: NextRequestWithImage) {
 
 
 
-    return NextResponse.json({data: restoredImage ? restoredImage : "Falha na restauração da imagem."}, {
+    return NextResponse.json({data: restoredImage ? restoredImage : "Falha na restauração do documento."}, {
         status: 200
     })
 }
