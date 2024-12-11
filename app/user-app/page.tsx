@@ -18,6 +18,7 @@ import ProjectsDone from '@/components/user-app/ProjectsDone'
 import { SidebarProvider } from '@/contexts/SidebarContext';
 import Link from 'next/link';
 
+export const dynamic = 'force-dynamic';
 
 export default async function UserApp() {
   let loggedIn = false;

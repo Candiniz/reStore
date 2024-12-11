@@ -14,7 +14,7 @@ import CreateAccountForm from '@/components/auth/CreateAccountForm';
 import LoginAccountForm from '@/components/auth/LoginAccountForm';
 import Image from 'next/image';
 
-
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   let loggedIn = false
