@@ -1,4 +1,3 @@
-/* eslint-disable prefer-const */
 import { createRouteHandlerClient } from "@supabase/auth-helpers-nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
@@ -36,24 +35,12 @@ export async function POST(req: NextRequestWithImage) {
         }),
     })
 
-    const responseText = await startRestoreProcess.text();
-    console.log("Resposta da API (texto):", responseText);
-
-    let jsonStartProcessResponse = await startRestoreProcess.json()
-    try {
-        jsonStartProcessResponse = JSON.parse(responseText);
-    } catch (error) {
-        console.error("Erro ao parsear a resposta JSON:", error);
-        return NextResponse.json({ message: "Erro ao processar resposta da API" }, { status: 500 });
-    }
-
+    const jsonStartProcessResponse = await startRestoreProcess.json()
     const endpointUrl = jsonStartProcessResponse.urls.get
-
-
 
     let restoredImage: string | null = null
 
-    while (!restoredImage) {
+    while(!restoredImage){
         console.log("Pooling image from Replicate...")
 
         const finalResponse = await fetch(endpointUrl, {
@@ -66,9 +53,9 @@ export async function POST(req: NextRequestWithImage) {
 
         const jsonFinalResponse = await finalResponse.json()
 
-        if (jsonFinalResponse.status === "succeeded") {
+        if(jsonFinalResponse.status === "succeeded") {
             restoredImage = jsonFinalResponse.output;
-        } else if (jsonFinalResponse.status === "failed") {
+        } else if(jsonFinalResponse.status === "failed") {
             break; // TODO: Gerar um erro para interface de usuário
         } else {
             await new Promise((resolve) => {
@@ -80,7 +67,7 @@ export async function POST(req: NextRequestWithImage) {
     console.log("Imagem sendo restaurada:", imageUrl);
 
 
-    return NextResponse.json({ data: restoredImage ? restoredImage : "Falha na restauração da imagem." }, {
+    return NextResponse.json({data: restoredImage ? restoredImage : "Falha na restauração da imagem."}, {
         status: 200
     })
 }

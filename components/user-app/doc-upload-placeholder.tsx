@@ -187,10 +187,10 @@ export default function DocumentUploadPlaceHolder() {
                 preview: URL.createObjectURL(imageBlob),
             });
             
-            const fileName = file?.file instanceof File ? file.file.name : "unknown";
+
             const { data, error } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
-                .upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED}/${userId}/${fileName}`, imageBlob)
+                .upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED}/${userId}/${(file?.file as File).name}`, imageBlob)
 
 
             if (error) {
