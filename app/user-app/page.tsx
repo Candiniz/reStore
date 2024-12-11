@@ -17,6 +17,7 @@ import UserAppDocument from '@/components/user-app/user-app-document';
 import ProjectsDone from '@/components/user-app/ProjectsDone'
 import { SidebarProvider } from '@/contexts/SidebarContext';
 import Link from 'next/link';
+import Footer from '@/components/user-app/Footer';
 
 export const dynamic = 'force-dynamic';
 
@@ -226,6 +227,7 @@ export default async function UserApp() {
             </div>
           </div>
         </div>
+        <Footer />
       </>
     )
   } catch (error) {

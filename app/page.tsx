@@ -13,6 +13,7 @@ import {
 import CreateAccountForm from '@/components/auth/CreateAccountForm';
 import LoginAccountForm from '@/components/auth/LoginAccountForm';
 import Image from 'next/image';
+import Footer from '@/components/user-app/Footer';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,6 +67,7 @@ export default async function Home() {
         className='max-w-[]'
         />
       </div>
+      <Footer />
     </div>
   );
 }
