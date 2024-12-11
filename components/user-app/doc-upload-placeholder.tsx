@@ -19,6 +19,7 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
+import Spinner from "../common/Spinner"
 
 
 interface FilePreview {
@@ -38,6 +39,8 @@ export default function DocumentUploadPlaceHolder() {
     const [totalProjects, setTotalProjects] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+
+    const [isLoading, setIsLoading] = useState(false); // Estado para gerenciar o spinner
 
 
 
@@ -142,6 +145,9 @@ export default function DocumentUploadPlaceHolder() {
     }
 
     const handleEnhance = async () => {
+        setIsLoading(true); // Exibe o spinner
+
+
         try {
             const supabase = createClientComponentClient();
 
@@ -180,10 +186,11 @@ export default function DocumentUploadPlaceHolder() {
                 file: imageBlob,
                 preview: URL.createObjectURL(imageBlob),
             });
-
+            
+            const fileName = file?.file instanceof File ? file.file.name : "unknown";
             const { data, error } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER)
-                .upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED}/${userId}/${file?.file.name}`, imageBlob)
+                .upload(`${process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_DOCUMENT_FOLDER_RESTORED}/${userId}/${fileName}`, imageBlob)
 
 
             if (error) {
@@ -200,6 +207,8 @@ export default function DocumentUploadPlaceHolder() {
                 console.error("handleEnhance: erro inesperado", error);
                 alert("Ocorreu um erro inesperado.");
             }
+        } finally {
+            setIsLoading(false); // Oculta o spinner
         }
     };
 
@@ -232,6 +241,7 @@ export default function DocumentUploadPlaceHolder() {
 
     return (
         <div className="flex h-[200px] w-full shrink-0 items-center justify-center rounded-md border border-dashed">
+            {isLoading && <Spinner />}
             <div className="mx-auto flex max-w-[420px] flex-col items-center justify-center text-center">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

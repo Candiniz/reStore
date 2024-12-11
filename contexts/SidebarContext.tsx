@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, ReactNode } from "react";
 
 // Definir o tipo do estado
 interface SidebarContextType {
@@ -11,12 +11,17 @@ interface SidebarContextType {
 // Criar o contexto com valores padrão
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 
+// Tipo das props do Provider
+interface SidebarProviderProps {
+  children: ReactNode; // ReactNode permite qualquer nó React válido
+}
+
 // Componente Provider para envolver o restante da aplicação
-export const SidebarProvider: React.FC = ({ children }) => {
+export const SidebarProvider: React.FC<SidebarProviderProps> = ({ children }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(prevState => !prevState);
+    setIsSidebarOpen((prevState) => !prevState);
   };
 
   return (

@@ -11,7 +11,7 @@ interface ComparisonPageProps {
 export default function ComparisonPage({ id }: ComparisonPageProps) {
   const router = useRouter();
   const [userId, setUserId] = useState<string | null>(null);
-  const [sliderPosition, setSliderPosition] = useState(50);
+
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);  // Acessa os parâmetros da URL
@@ -34,9 +34,7 @@ export default function ComparisonPage({ id }: ComparisonPageProps) {
 
 
   console.log(restoredImage)
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSliderPosition(Number(e.target.value));
-  };
+
 
   if (!userId) {
     return <div>Loading...</div>; // Exiba algo enquanto o userId está sendo carregado
@@ -47,18 +45,18 @@ export default function ComparisonPage({ id }: ComparisonPageProps) {
       <ReactCompareImage
         leftImage={originalImage}
         rightImage={restoredImage}
-        leftImageStyle={{
+        leftImageCss={{
           objectFit: "contain", // Garante que a imagem original será redimensionada sem cortar
 
         }}
-        rightImageStyle={{
+        rightImageCss={{
           objectFit: "contain", // Garante que a imagem restaurada será redimensionada sem cortar
 
         }}
       />
       {/* Botão de Voltar */}
       <button
-        className="absolute top-4 left-4 px-4 py-2 bg-white text-black rounded-md z-10"
+        className="fixed top-4 left-4 px-4 py-2 bg-white text-black rounded-md z-10"
         onClick={() => router.back()}
       >
         Voltar
