@@ -95,7 +95,7 @@ export default async function UserApp() {
             <UserAppHeader />
             <Sidebar />
           </SidebarProvider>
-          <div className="text-[#052539] px-10 lg:px-2 lg:mt-[50px] lg:ml-64">
+          <div className="text-[#052539] px-10 lg:px-2 lg:mt-[50px] w-full lg:ml-64">
             <div className="">
               <div className="col-span-3 lg:col-span-4 lg:border-l">
                 <div className="h-full px-4 py-6 lg:px-8">
