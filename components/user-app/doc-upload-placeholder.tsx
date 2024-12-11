@@ -35,6 +35,12 @@ export default function DocumentUploadPlaceHolder() {
     const [fileToProcess, setFileToProcess] = useState<{ path: string } | null>(null)
     const [restoredFile, setRestoredFile] = useState<FilePreview | null>()
 
+    const [totalProjects, setTotalProjects] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
+
+
     const onDrop = useCallback(async (acceptFiles: File[]) => {
         try {
             const file = acceptFiles[0];
@@ -197,6 +203,30 @@ export default function DocumentUploadPlaceHolder() {
         }
     };
 
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const response = await fetch("/api/supabase/count"); // Chama sua API
+                const data = await response.json();
+
+                setTotalProjects(data.totalProjects); // Armazena o número de projetos
+            } catch (err) {
+                setError("Erro ao carregar projetos");
+            } finally {
+                setLoading(false); // Finaliza o carregamento
+            }
+        };
+
+        fetchProjects();
+    }, []);
+
+    if (loading) {
+        return <p className="m-auto py-5 w-full text-center text-sm text-muted-foreground">Carregando...</p>;
+    }
+
+    if (error) {
+        return <p>{error}</p>;
+    }
 
     if (!isMounted) return null
 
@@ -218,7 +248,12 @@ export default function DocumentUploadPlaceHolder() {
                     <path d="M17 18.5a9 9 0 1 0-10 0" />
                 </svg>
 
-                <h3 className="mt-4 text-lg font-semibold">Adicione seu primeiro documento!</h3>
+                <h3 className="mt-4 text-lg font-semibold">
+                    {totalProjects > 0
+                        ? "O que vamos aprimorar hoje?"
+                        : "Adicione seu primeiro documento!"
+                    }
+                </h3>
                 <p className="mb-4 mt-2 text-sm text-muted-foreground">
                     Selecione os documentos que serão aprimoradas!
                 </p>
@@ -230,9 +265,17 @@ export default function DocumentUploadPlaceHolder() {
                     </DialogTrigger>
                     <DialogContent>
                         <DialogHeader>
-                            <DialogTitle>Adicionar documento</DialogTitle>
+                            <DialogTitle>
+                                {restoredFile
+                                    ? "Processo Concluido!"
+                                    : "Adicionar foto"
+                                }
+                            </DialogTitle>
                             <DialogDescription>
-                                Arraste seu documento para fazer o Upload & Aprimoramento
+                                {restoredFile
+                                    ? "Você pode ver a sua foto aprimorada no seu Dashboard! Veja a diferença entre a versão original e a aprimorada na sessão 'Antes/Depois'!"
+                                    : "Arraste sua foto para fazer o Upload & Aprimoramento"
+                                }
                             </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
@@ -282,7 +325,10 @@ export default function DocumentUploadPlaceHolder() {
                             </div>
                         </div>
                         <DialogFooter>
-                            <Button onClick={handleEnhance}>Aprimorar</Button>
+                            <Button
+                                onClick={restoredFile ? handleDialogOpenChange.bind(null, false) : handleEnhance}>
+                                {restoredFile ? "Fechar" : "Aprimorar"}
+                            </Button>
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>

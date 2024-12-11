@@ -22,35 +22,39 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 
-
 export function UserNav() {
-
-    const [user, setUser] = useState<User | null>()
+    const [user, setUser] = useState<User | null>(null) // Inicializando como null
     const supabase = createClientComponentClient()
     const router = useRouter()
 
+    // Função para pegar o usuário
     const getUser = async () => {
         const { data: { user }, error } = await supabase.auth.getUser()
 
         if (error) {
             console.log("UserNav", error)
-        } else {
-            setUser(user)
+            return
         }
+        setUser(user)
     }
 
+    // Efeito para carregar o usuário ao montar o componente
     useEffect(() => {
         getUser()
-    })
 
+        // Dependência vazia para executar somente uma vez no carregamento inicial
+    }, [])
+
+    // Função de logout
     const handleSignOut = async () => {
         await supabase.auth.signOut()
-        router.refresh()
+        setUser(null) // Garantir que o estado do usuário seja resetado após o logout
+        router.refresh() // Recarregar a página
     }
 
     return (
         <>
-            {user && (
+            {user ? (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -85,8 +89,11 @@ export function UserNav() {
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+            ) : (
+                <Button variant="outline" onClick={() => router.push('/login')}>
+                    Log In
+                </Button>
             )}
-
         </>
     )
 }

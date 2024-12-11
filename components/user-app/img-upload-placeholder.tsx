@@ -19,6 +19,8 @@ import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import { useDropzone } from "react-dropzone"
+import { GetServerSideProps } from "next";
+
 
 interface FilePreview {
     file: Blob
@@ -34,6 +36,9 @@ export default function ImageUploadPlaceHolder() {
     const [fileToProcess, setFileToProcess] = useState<{ path: string } | null>(null)
     const [restoredFile, setRestoredFile] = useState<FilePreview | null>()
 
+    const [totalProjects, setTotalProjects] = useState<number>(0);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
 
 
@@ -93,6 +98,8 @@ export default function ImageUploadPlaceHolder() {
 
 
 
+
+
     useEffect(() => {
         setIsMounted(true)
         return () => {
@@ -100,6 +107,8 @@ export default function ImageUploadPlaceHolder() {
             if (restoredFile) URL.revokeObjectURL(restoredFile.preview)
         }
     }, [file])
+
+
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
@@ -149,8 +158,8 @@ export default function ImageUploadPlaceHolder() {
             const { data: { publicUrl } } = await supabase.storage
                 .from(process.env.NEXT_PUBLIC_SUPABASE_APP_BUCKET_IMAGE_FOLDER)
                 .getPublicUrl(`${fileToProcess?.path}`);
-                
-                console.log("fileToProcess:", fileToProcess);
+
+            console.log("fileToProcess:", fileToProcess);
 
 
             const res = await fetch("/api/ai/replicate", {
@@ -203,6 +212,31 @@ export default function ImageUploadPlaceHolder() {
         }
     };
 
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const response = await fetch("/api/supabase/count"); // Chama sua API
+                const data = await response.json();
+
+                setTotalProjects(data.totalProjects); // Armazena o número de projetos
+            } catch (err) {
+                setError("Erro ao carregar projetos");
+            } finally {
+                setLoading(false); // Finaliza o carregamento
+            }
+        };
+
+        fetchProjects();
+    }, []);
+
+    if (loading) {
+        return <p className="m-auto py-5 w-full text-center text-sm text-muted-foreground">Carregando...</p>; 
+    }
+
+    if (error) {
+        return <p>{error}</p>;
+    }
+
     if (!isMounted) return null
 
     return (
@@ -223,7 +257,12 @@ export default function ImageUploadPlaceHolder() {
                     <path d="M17 18.5a9 9 0 1 0-10 0" />
                 </svg>
 
-                <h3 className="mt-4 text-lg font-semibold">Adicione sua primeira foto!</h3>
+                <h3 className="mt-4 text-lg font-semibold">
+                    {totalProjects > 0
+                        ? "O que vamos aprimorar hoje?"
+                        : "Adicione sua primeira foto!"
+                    }
+                </h3>
                 <p className="mb-4 mt-2 text-sm text-muted-foreground">
                     Selecione as fotos que serão aprimoradas!
                 </p>

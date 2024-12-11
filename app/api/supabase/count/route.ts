@@ -1,6 +1,7 @@
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";  // Para acessar os cookies da requisição
 
+
 async function countProjects(userId: string) {
     const supabase = createServerComponentClient({
         cookies,  // Passa os cookies para o supabase

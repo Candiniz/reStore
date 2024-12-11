@@ -15,6 +15,8 @@ import { redirect, RedirectType } from 'next/navigation';
 import DocumentUploadPlaceHolder from '@/components/user-app/doc-upload-placeholder';
 import UserAppDocument from '@/components/user-app/user-app-document';
 import ProjectsDone from '@/components/user-app/ProjectsDone'
+import { SidebarProvider } from '@/contexts/SidebarContext';
+import Link from 'next/link';
 
 
 export default async function UserApp() {
@@ -86,133 +88,138 @@ export default async function UserApp() {
 
     return (
       <>
-        <div className="">
-          <UserAppHeader />
-          <div className="text-[#052539] mt-[50px]">
+        <div className="lg:flex">
+          <SidebarProvider>
+            <UserAppHeader />
+            <Sidebar />
+          </SidebarProvider>
+          <div className="text-[#052539] px-10 lg:px-2 lg:mt-[50px] lg:ml-64">
             <div className="">
-              <div className="grid lg:grid-cols-5">
-                <div>
-                  <Sidebar className='hidden lg:block' />
-                </div>
-                <div className="col-span-3 lg:col-span-4 lg:border-l">
-                  <div className="h-full px-4 py-6 lg:px-8">
-                    <Tabs defaultValue="fotos" className="h-full space-y-6">
-                      <div className="space-between flex items-center">
-                        <TabsList>
-                          <TabsTrigger value="fotos" className="relative">
-                            Fotos
-                          </TabsTrigger>
-                          <TabsTrigger value="documentos">Documentos</TabsTrigger>
-                          <TabsTrigger value="outros" className="relative">
-                            Outros
-                          </TabsTrigger>
-                        </TabsList>
-                        <div className="ml-auto mr-4 flex">
-                          <div>
-                            <ProjectsDone />
-                          </div>
+              <div className="col-span-3 lg:col-span-4 lg:border-l">
+                <div className="h-full px-4 py-6 lg:px-8">
+                  <Tabs defaultValue="fotos" className="h-full space-y-6">
+                    <div className="space-between flex items-center w-full justify-center">
+                      <TabsList>
+                        <TabsTrigger value="fotos" className="relative">
+                          Fotos
+                        </TabsTrigger>
+                        <TabsTrigger value="documentos">Documentos</TabsTrigger>
+                        <TabsTrigger value="outros" className="relative">
+                          Outros
+                        </TabsTrigger>
+                      </TabsList>
+                      <div className="ml-auto mr-4 flex">
+                        <Link href='/perfil'>
                           <Button>
                             <PlusCircle />
-                            Adicionar Conjunto
+                            Ver Perfil
                           </Button>
+                        </Link>
+                      </div>
+                    </div>
+                    <TabsContent
+                      value="fotos"
+                      className="border-none p-0 outline-none"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <h2 className="text-2xl font-semibold tracking-tight">
+                            Coleções de Fotos
+                          </h2>
+                          <p className="text-sm text-muted-foreground">
+                            Fotos já aprimoradas:
+                          </p>
                         </div>
                       </div>
-                      <TabsContent
-                        value="fotos"
-                        className="border-none p-0 outline-none"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-1">
-                            <h2 className="text-2xl font-semibold tracking-tight">
-                              Coleções de Fotos
-                            </h2>
-                            <p className="text-sm text-muted-foreground">
-                              Fotos já aprimoradas:
-                            </p>
-                          </div>
-                        </div>
+                      <Separator className="my-4" />
+                      <div className="relative">
+                        <ImageUploadPlaceHolder />
                         <Separator className="my-4" />
-                        <div className="relative">
-                          <ImageUploadPlaceHolder />
-                          <ScrollArea>
-                            <div
-                              className="flex items-center justify-center flex-wrap gap-2
+                        <h3 className='py-5 w-full text-center'>
+                          Clique em uma imagem para comparar o resultado com a original!
+                        </h3>
+                        <ScrollArea>
+                          <div
+                            className="flex items-center justify-center flex-wrap gap-2
                           ">
-                              {filteredRestoredImages?.map((restoredImage) => (
+                            {filteredRestoredImages?.map((restoredImage) => (
+                              <Link
+                                key={restoredImage.name}
+                                href={`/${restoredImage.name}?userId=${userId}`}
+                              >
                                 <UserAppImage
-                                  key={restoredImage.name}
                                   image={restoredImage}
-                                  className="w-[250px]"
+                                  className="w-[250px] cursor-pointer"
                                   aspectRatio="square"
                                   width={250}
                                   height={330}
                                   publicImgUrl={publicImgUrl}
                                 />
-                              ))}
-                            </div>
-                            <ScrollBar orientation="horizontal" />
-                          </ScrollArea>
-                        </div>
-                        <div className="mt-6 space-y-1">
-
-                        </div>
-                        <Separator className="my-4" />
-                      </TabsContent>
-                      <TabsContent
-                        value="documentos"
-                        className="h-full flex-col border-none p-0 data-[state=active]:flex"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-1">
-                            <h2 className="text-2xl font-semibold tracking-tight">
-                              Coleções de Documentos
-                            </h2>
-                            <p className="text-sm text-muted-foreground">
-                              Documentos já aprimorados:
-                            </p>
+                              </Link>
+                            ))}
                           </div>
+                          <ScrollBar orientation="horizontal" />
+                        </ScrollArea>
+                      </div>
+                      <div className="mt-6 space-y-1">
+
+                      </div>
+                      <Separator className="my-4" />
+                    </TabsContent>
+                    <TabsContent
+                      value="documentos"
+                      className="h-full flex-col border-none p-0 data-[state=active]:flex"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <h2 className="text-2xl font-semibold tracking-tight">
+                            Coleções de Documentos
+                          </h2>
+                          <p className="text-sm text-muted-foreground">
+                            Documentos já aprimorados:
+                          </p>
                         </div>
-                        <Separator className="my-4" />
-                        <div className='relative'>
-                          <DocumentUploadPlaceHolder />
-                          <ScrollArea>
-                            <div
-                              className="flex items-center justify-center flex-wrap gap-2
+                      </div>
+                      <Separator className="my-4" />
+                      <div className='relative'>
+                        <DocumentUploadPlaceHolder />
+                        <ScrollArea>
+                          <div
+                            className="flex items-center justify-center flex-wrap gap-2
                           ">
-                              {filteredRestoredDocuments?.map((restoredDocument) => (
-                                <UserAppDocument
-                                  key={restoredDocument.name}
-                                  image={restoredDocument}
-                                  className="w-[250px]"
-                                  aspectRatio="square"
-                                  width={250}
-                                  height={330}
-                                  publicDocUrl={publicDocUrl}
-                                />
-                              ))}
-                            </div>
-                            <ScrollBar orientation="horizontal" />
-                          </ScrollArea>
-                        </div>
-                      </TabsContent>
-                      <TabsContent
-                        value="outros"
-                        className="h-full flex-col border-none p-0 data-[state=active]:flex"
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="space-y-1">
-                            <h2 className="text-2xl font-semibold tracking-tight">
-                              Outros:
-                            </h2>
+                            {filteredRestoredDocuments?.map((restoredDocument) => (
+                              <UserAppDocument
+                                key={restoredDocument.name}
+                                image={restoredDocument}
+                                className="w-[250px]"
+                                aspectRatio="square"
+                                width={250}
+                                height={330}
+                                publicDocUrl={publicDocUrl}
+                              />
+                            ))}
                           </div>
+                          <ScrollBar orientation="horizontal" />
+                        </ScrollArea>
+                      </div>
+                    </TabsContent>
+                    <TabsContent
+                      value="outros"
+                      className="h-full flex-col border-none p-0 data-[state=active]:flex"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="space-y-1">
+                          <h2 className="text-2xl font-semibold tracking-tight">
+                            Outros:
+                          </h2>
                         </div>
-                        <Separator className="my-4" />
-                        <div className='relative'>
+                      </div>
+                      <Separator className="my-4" />
+                      <div className='relative'>
 
-                        </div>
-                      </TabsContent>
-                    </Tabs>
-                  </div>
+                      </div>
+                    </TabsContent>
+                  </Tabs>
                 </div>
               </div>
             </div>
