@@ -46,20 +46,33 @@ export default function CreateAccountForm() {
         // }
       })
 
-      if(user) {
+      if (user) {
         form.reset()
         // router.push("/")
         router.refresh()
       }
 
-    } catch(error) {
+      if (error) {
+        // Checa se o status do erro é 422 para email já existente
+        if (error.status === 422) {
+          form.setError("email", {
+            type: "manual",
+            message: "Este email já está cadastrado. Tente outro.",
+          });
+        } else {
+          console.error("Erro no cadastro:", error.message);
+        }
+      }
+
+    } catch (error) {
       console.log("CreateAccountForm", error)
     }
   };
 
+
   return (
     <div className="flex flex-col justify-center items-center space-y-2">
-      <span className="text-lg">Você irá amar!</span>
+      <span className="text-lg font-bold">Você irá amar!</span>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -98,7 +111,7 @@ export default function CreateAccountForm() {
           />
 
           {/* Botão de Submit */}
-          <Button className='' type="submit">Criar Conta</Button>
+          <Button className='bg-gray-800' type="submit">Criar Conta</Button>
         </form>
       </Form>
     </div>

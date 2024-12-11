@@ -59,7 +59,7 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="p-8 space-y-8 md:mx-36">
       <div className="flex items-center space-x-4">
         <Avatar className="h-16 w-16 rounded-full border-[1px] border-gray-300">
           <AvatarImage src="/avatars/male1.png" alt="Foto de Perfil" />

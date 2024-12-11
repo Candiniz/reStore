@@ -48,8 +48,8 @@ export function UserNav() {
     // Função de logout
     const handleSignOut = async () => {
         await supabase.auth.signOut()
-        setUser(null) // Garantir que o estado do usuário seja resetado após o logout
-        router.refresh() // Recarregar a página
+        router.push('/'); // Garantir que o estado do usuário seja resetado após o logout
+
     }
 
     return (
@@ -77,14 +77,16 @@ export function UserNav() {
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
-                                Profile
-                                <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-                            </DropdownMenuItem>
+                            <Link href={"/perfil"}>
+                                <DropdownMenuItem className="cursor-pointer">
+                                    Perfil
+                                    <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                                </DropdownMenuItem>
+                            </Link>
                         </DropdownMenuGroup>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={handleSignOut}>
-                            Log out
+                        <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer">
+                            Sair
                             <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
                         </DropdownMenuItem>
                     </DropdownMenuContent>

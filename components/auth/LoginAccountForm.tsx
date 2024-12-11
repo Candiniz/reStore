@@ -54,7 +54,7 @@ export default function LoginAccountForm() {
 
   return (
     <div className="flex flex-col justify-center items-center space-y-2">
-      <span className="text-lg">Bem vindo novamente!</span>
+      <span className="text-lg font-bold">Bem vindo novamente!</span>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
