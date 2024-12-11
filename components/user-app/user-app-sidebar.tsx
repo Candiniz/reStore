@@ -41,7 +41,7 @@ export function Sidebar() {
         <div className="space-y-4 py-4 mt-16">
           <div className="px-3 py-2">
             <h2 className="mb-2 px-4 text-lg font-semibold tracking-tight">
-              IA's
+              IAs
             </h2>
             <div className="space-y-1">
               <Link href="https://replicate.com" target="blank">
@@ -58,7 +58,7 @@ export function Sidebar() {
                   >
                     <path d="M12 2l1.45 4.55L18 7.95l-3.55 3.45 1.55 4.95-4.55-2.45-4.55 2.45L9 11.4 5.45 7.95l4.55-.9z" />
                   </svg>
-                  Explore as IA's
+                  Explore as IAs
                 </Button>
               </Link>
               <Link href='/funcionalidades-ia'>
