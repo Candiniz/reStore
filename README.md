@@ -33,7 +33,7 @@ Esses desafios foram essenciais para aprofundar meu conhecimento em desenvolvime
 
 1. Clone o repositório:
    ```bash
-   git clone https://github.com/seu-usuario/reStora.git
+   git clone https://github.com/Candiniz/reStora.git
    ```
 2. Acesse a pasta do projeto:
    ```bash
