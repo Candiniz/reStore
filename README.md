@@ -1,5 +1,11 @@
 # reStora
 
+<p align="center">
+  <img src="https://media2.giphy.com/media/eNAsjO55tPbgaor7ma/giphy.gif?cid=6c09b9526zav4uykhu5rebxit3k84hosqpoh5plxwbcetc7z&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s" width="70" style="vertical-align: middle; display: inline-block;">
+  <img src="https://img.itch.zone/aW1nLzQ5NDI5NjkuZ2lm/original/z2%2Bcie.gif" width="100" style="vertical-align: bottom; display: inline-block;">
+  <img src="https://media2.giphy.com/media/ln7z2eWriiQAllfVcn/giphy.gif?cid=6c09b9523j00k4nr489c9yszsue2ckfmt4xqxdncj6zno00d&ep=v1_internal_gif_by_id&rid=giphy.gif&ct=s" width="80" style="vertical-align: middle; display: inline-block;">
+</p>
+
 reStora é um projeto criado para explorar a **criação de APIs**, **integração de IA**, **sistemas SaaS** e a **conexão fullstack entre frontend e backend** utilizando o Supabase.
 
 A ideia inicial era construir um aplicativo que permitisse restaurar imagens danificadas, combinando **tecnologia de ponta** com uma **experiência de usuário simples e eficiente**.
