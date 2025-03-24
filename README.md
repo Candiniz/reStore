@@ -1,36 +1,84 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# reStora
 
-## Getting Started
+reStora é um projeto criado para explorar a **criação de APIs**, **integração de IA**, **sistemas SaaS** e a **conexão fullstack entre frontend e backend** utilizando o Supabase.
 
-First, run the development server:
+A ideia inicial era construir um aplicativo que permitisse restaurar imagens danificadas, combinando **tecnologia de ponta** com uma **experiência de usuário simples e eficiente**.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🚀 Tecnologias Utilizadas
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Supabase** - Armazenamento de imagens e gestão de permissões
+- **Replicate API** - Processamento de imagens via IA
+- **Next.js** - Estruturação do frontend
+- **TypeScript** - Tipagem segura e confiável
+- **Tailwind CSS** - Estilização moderna e responsiva
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Como Funciona
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+O aplicativo segue um fluxo simples e eficiente:
 
-## Learn More
+1. **Upload da Imagem** - O usuário envia uma imagem, que é armazenada em um bucket do Supabase.
+2. **Processamento com IA** - A imagem é enviada para a API do Replicate, que executa a restauração.
+3. **Exibição e Download** - O resultado final é exibido para o usuário, que pode baixar a versão restaurada.
 
-To learn more about Next.js, take a look at the following resources:
+## ⚡ Desafios e Aprendizados
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Configuração de APIs de IA**
+- **Problemas de tipagem no TypeScript**
+- **Gerenciamento de permissões no Supabase**
+- **Otimização do fluxo de upload e processamento**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Esses desafios foram essenciais para aprofundar meu conhecimento em desenvolvimento fullstack e na integração de tecnologias modernas.
 
-## Deploy on Vercel
+## 📂 Como Rodar o Projeto
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Clone o repositório:
+   ```bash
+   git clone https://github.com/seu-usuario/reStora.git
+   ```
+2. Acesse a pasta do projeto:
+   ```bash
+   cd reStora
+   ```
+3. Instale as dependências:
+   ```bash
+   npm install
+   ```
+4. Configure as variáveis de ambiente no arquivo `.env.local`
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
+   REPLICATE_API_KEY=your_replicate_api_key
+   ```
+5. Execute o projeto:
+   ```bash
+   npm run dev
+   ```
+6. Acesse **http://localhost:3000** no navegador.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🤝 Contribuição
+
+Sinta-se à vontade para contribuir com melhorias e novas funcionalidades! Para isso:
+
+1. Fork o repositório
+2. Crie uma nova branch:
+   ```bash
+   git checkout -b minha-melhoria
+   ```
+3. Faça suas modificações e commite:
+   ```bash
+   git commit -m "Melhoria: Adicionei nova funcionalidade X"
+   ```
+4. Envie para o repositório remoto:
+   ```bash
+   git push origin minha-melhoria
+   ```
+5. Abra um Pull Request 🚀
+
+## 📜 Licença
+
+Este projeto foi desenvolvido com fins educacionais e exploratórios. Caso tenha interesse em utilizá-lo, entre em contato!
+
+---
+
+🎯 **reStora** é um marco no meu aprendizado, demonstrando habilidades em desenvolvimento fullstack, solução de problemas e criação de sistemas escaláveis. Obrigado por conferir este projeto! 😊
+
